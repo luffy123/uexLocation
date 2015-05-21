@@ -1,13 +1,15 @@
 package org.zywx.wbpalmstar.plugin.uexlocation;
 
-import java.util.ArrayList;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+
+import java.util.ArrayList;
 
 public class BaiduLocation {
 	
@@ -68,9 +70,8 @@ public class BaiduLocation {
         mLocClient.registerLocationListener(mListener);
         LocationClientOption option = new LocationClientOption();
         option.setOpenGps(true);
-        option.setAddrType("notAll");
+        option.setIsNeedAddress(true);
         option.setCoorType(coor_default);
-        option.setPriority(LocationClientOption.NetWorkFirst);
         option.setScanSpan(INTERVAL);
         mLocClient.setLocOption(option);
 	}
@@ -203,9 +204,5 @@ public class BaiduLocation {
 	        innerLocCallback(dLat, dLog, dRadius);
 		}
 
-		@Override
-		public void onReceivePoi(BDLocation arg0) {
-			;
-		}
 	}
 }
