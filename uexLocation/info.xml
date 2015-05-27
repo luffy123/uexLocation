@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
     <plugin
-        uexName="uexLocation" version="3.0.5" build="5">
-		<info>5:修复getAddress方法flag为1时返回json格式不正确的问题</info>
+        uexName="uexLocation" version="3.0.6" build="6">
+        <info>6:sdk升级</info>
+        <build>5:修复getAddress方法flag为1时返回json格式不正确的问题</build>
         <build>4:移动插件包中的定位jar包和so文件至引擎中</build>
         <build>3:新增getAddress接口参数</build>
         <build>2:修改uexLocation不能在关闭gprs 和wifi的时候使用gps 获取坐标</build>
