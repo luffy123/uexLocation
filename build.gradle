@@ -9,12 +9,12 @@ android {
         config {
             keyAlias 'appcandevelop'
             keyPassword '3g2win.com'
-            storeFile file('E:/djf/work/Key相关/1019-com.appcan.develop/AppcanDevelop.keystore')
+            storeFile file('AppcanDevelop.keystore')
             storePassword '3g2win.com'
         }
     }
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "23.0.0"
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
