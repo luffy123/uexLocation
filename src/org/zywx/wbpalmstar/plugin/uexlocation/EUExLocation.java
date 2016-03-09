@@ -1,5 +1,10 @@
 package org.zywx.wbpalmstar.plugin.uexlocation;
 
+import android.content.Context;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -10,17 +15,13 @@ import org.json.JSONObject;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.engine.universalex.EUExCallback;
-import android.content.Context;
-import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
 public class EUExLocation extends EUExBase{
 
 	public static final String onFunction 	= "uexLocation.onChange";
 	public static final String functiong 	= "uexLocation.cbGetAddress";
 	public static final String functionl 	= "uexLocation.cbOpenLocation";
-	
+
 
 	protected static int count = -1;
 	protected int mMyId;
@@ -51,13 +52,13 @@ public class EUExLocation extends EUExBase{
 		}
 		String inLatitude = parm[0];
 		String inLongitude = parm[1];
-	    int flag = 0; 
+		int flag = 0;
 		if(parm.length > 2){
-		    try {
-                flag = Integer.valueOf(parm[2]);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+			try {
+				flag = Integer.valueOf(parm[2]);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		if(null != mQueryTask){
 			mQueryTask.shutDown();
@@ -71,28 +72,28 @@ public class EUExLocation extends EUExBase{
 		BaiduLocation bdl = BaiduLocation.get(mContext);
 		bdl.closeLocation(mLCallback);
 	}
-	
+
 	private boolean checkSetting(){
 		try{
 			LocationManager lm = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
 			boolean gpsEnable = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			boolean netEnable = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-			
+
 			ConnectivityManager cm = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfos = cm.getActiveNetworkInfo();
-            boolean net = false;
-            boolean wifi = false;
-            if(networkInfos != null){
-                net = networkInfos.getState() == NetworkInfo.State.CONNECTED;
-                wifi = networkInfos.getType() == ConnectivityManager.TYPE_WIFI;
-            }
+			boolean net = false;
+			boolean wifi = false;
+			if(networkInfos != null){
+				net = networkInfos.getState() == NetworkInfo.State.CONNECTED;
+				wifi = networkInfos.getType() == ConnectivityManager.TYPE_WIFI;
+			}
 			return gpsEnable || netEnable || net || wifi;
 		}catch (Exception e) {
 			;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean clean() {
 		BaiduLocation bdl = BaiduLocation.get(mContext);
@@ -105,20 +106,20 @@ public class EUExLocation extends EUExBase{
 	}
 
 	private class QueryTask extends Thread{
-		
+
 		public String mLatitude;
 		public String mLongitude;
 		public HttpGet mHttpGet;
 		public DefaultHttpClient mHttpClient;
 		private boolean mShutDown;
 		private int mFlag;
-		
+
 		public QueryTask(String inLat, String inLon, int flag){
 			mLatitude = inLat;
 			mLongitude = inLon;
 			mFlag = flag;
 		}
-		
+
 		@Override
 		public void run() {
 			try {
@@ -149,20 +150,20 @@ public class EUExLocation extends EUExBase{
 					}
 					JSONObject result = json.getJSONObject("result");
 					if(mFlag == 1){
-	                    JSONObject cbResult = new JSONObject();
-	                    if(result.has("formatted_address")){
-	                        cbResult.put("formatted_address", result.getString("formatted_address"));
-	                    }
-	                    if(result.has("addressComponent")){
-	                    	cbResult.put("addressComponent", result.getJSONObject("addressComponent"));
-                        }
-	                    if(result.has("location")){
-	                    	cbResult.put("location", result.getJSONObject("location"));
-                        }
-	                    jsCallback(functiong, 0, EUExCallback.F_C_JSON, cbResult.toString());
+						JSONObject cbResult = new JSONObject();
+						if(result.has("formatted_address")){
+							cbResult.put("formatted_address", result.getString("formatted_address"));
+						}
+						if(result.has("addressComponent")){
+							cbResult.put("addressComponent", result.getJSONObject("addressComponent"));
+						}
+						if(result.has("location")){
+							cbResult.put("location", result.getJSONObject("location"));
+						}
+						jsCallback(functiong, 0, EUExCallback.F_C_JSON, cbResult.toString());
 					}else{
-	                    String formatted_address = result.getString("formatted_address");
-	                    jsCallback(functiong, 0, EUExCallback.F_C_TEXT, formatted_address);					    
+						String formatted_address = result.getString("formatted_address");
+						jsCallback(functiong, 0, EUExCallback.F_C_TEXT, formatted_address);
 					}
 					return;
 				}
@@ -179,7 +180,7 @@ public class EUExLocation extends EUExBase{
 			}
 			errorCallback(0, EUExCallback.F_E_UEXlOCATION_GETADDRESS, "netWork error");
 		}
-		
+
 		public void shutDown(){
 			mShutDown = true;
 			if(null != mHttpGet){
@@ -190,17 +191,19 @@ public class EUExLocation extends EUExBase{
 			}
 		}
 	}
-	
+
 	private class LCallback implements LocationCallback{
 
 		public LCallback(){
 			;
 		}
-		
+
 		@Override
 		public void onLocation(double lat, double log, float radius) {
 			String js = SCRIPT_HEADER + "if(" + onFunction + "){" + onFunction + "(" + lat + "," + log + "," + radius + ");}";
-			onCallback(js);
+			mBrwView.loadUrl(js);
 		}
 	}
+
+
 }
