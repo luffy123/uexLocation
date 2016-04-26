@@ -37,6 +37,16 @@
                 //以上两参数仅ios支持
                 uexLocation.openLocation(locLevel, distanceFilter);
             }
+            function convert() {
+                 var params = {
+                    latitude: 30.453851,
+                    longitude: 114.430494,
+                    from:"gcj02",
+                    to:"bd09"
+                 };
+                 var data = uexLocation.convertLocation(JSON.stringify(params));
+                 alert(data);
+            }
             </script>
             </head>
     <body>
@@ -54,6 +64,8 @@
                             <div class="tcxx" id="adre"></div>
                             <span>3.关闭定位</span>
                         <input class = "btn" type = "button" value = "关闭" onclick ="uexLocation.closeLocation();"></div>
+            <input class="btn" type="button" value="地址转换" onclick="convert();">
+
         </div>
     </body>
 </html>

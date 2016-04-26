@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -11,16 +12,22 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.engine.universalex.EUExCallback;
 
 public class EUExLocation extends EUExBase{
+    private static final String TAG = "EUExLocation";
 
 	public static final String onFunction 	= "uexLocation.onChange";
 	public static final String functiong 	= "uexLocation.cbGetAddress";
 	public static final String functionl 	= "uexLocation.cbOpenLocation";
+
+    public static final String WGS84 = "wgs84";
+    public static final String BD09 = "bd09";
+    public static final String GCJ02 = "gcj02";
 
 
 	protected static int count = -1;
@@ -67,6 +74,60 @@ public class EUExLocation extends EUExBase{
 		mQueryTask = new QueryTask(inLatitude, inLongitude, flag);
 		mQueryTask.start();
 	}
+
+    /**
+     * 坐标转换
+     * @param params
+     */
+    public String convertLocation(String [] params) {
+        if (params == null &&  params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return null;
+        }
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(params[0]);
+            double latitude = jsonObject.optDouble("latitude", 0.0);
+            double longitude = jsonObject.optDouble("longitude", 0.0);
+
+            String from = jsonObject.optString("from", "");
+            String to = jsonObject.optString("to", "");
+            boolean isValid =  (WGS84.equalsIgnoreCase(from) || BD09.equalsIgnoreCase(from) || GCJ02.equalsIgnoreCase(from))
+                    && (WGS84.equalsIgnoreCase(to) || BD09.equalsIgnoreCase(to) || GCJ02.equalsIgnoreCase(to));
+            if (!isValid) {
+                Log.i(TAG, "invalid params");
+                return null;
+            }
+            double [] result = null;
+            if (WGS84.equalsIgnoreCase(from) && BD09.equalsIgnoreCase(to)) {
+                result = CoordTransform.WGS84ToBD09(longitude, latitude);
+            } else if (WGS84.equalsIgnoreCase(from) && GCJ02.equalsIgnoreCase(to)) {
+                result = CoordTransform.WGS84ToGCJ02(longitude, latitude);
+            } else if (BD09.equalsIgnoreCase(from) && GCJ02.equalsIgnoreCase(to)) {
+                result = CoordTransform.BD09ToGCJ02(longitude, latitude);
+            } else if (BD09.equalsIgnoreCase(from) && WGS84.equalsIgnoreCase(to)) {
+                result = CoordTransform.BD09ToWGS84(longitude, latitude);
+            } else if (GCJ02.equalsIgnoreCase(from) && WGS84.equalsIgnoreCase(to)) {
+                result = CoordTransform.GCJ02ToWGS84(longitude, latitude);
+            } else if (GCJ02.equalsIgnoreCase(from) && BD09.equalsIgnoreCase(to)) {
+                result = CoordTransform.GCJ02ToBD09(longitude, latitude);
+            } else {
+                //如果传入的from, to 非法，则不处理
+                result = new double[2];
+                result[0] = longitude;
+                result[1] = latitude;
+            }
+            if (result != null) {
+                JSONObject resultObj = new JSONObject();
+                resultObj.put("longitude", result[0]);
+                resultObj.put("latitude", result[1]);
+                return resultObj.toString();
+            }
+        } catch (JSONException e) {
+            Log.i(TAG, "JSONException:" + e.getMessage());
+        }
+        return null;
+    }
 
 	public void closeLocation(String[] parm) {
 		BaiduLocation bdl = BaiduLocation.get(mContext);
