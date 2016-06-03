@@ -1,5 +1,6 @@
 package org.zywx.wbpalmstar.plugin.uexlocation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -18,6 +19,7 @@ import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.engine.universalex.EUExCallback;
 
+
 public class EUExLocation extends EUExBase{
     private static final String TAG = "EUExLocation";
 
@@ -34,6 +36,8 @@ public class EUExLocation extends EUExBase{
 	protected int mMyId;
 	private LCallback mLCallback;
 	private QueryTask mQueryTask;
+	private String getAddressFunId;
+	private String openLocationFunId;
 
 	public EUExLocation(Context context, EBrowserView inParent) {
 		super(context, inParent);
@@ -44,9 +48,18 @@ public class EUExLocation extends EUExBase{
 
 	public void openLocation(String[] parm) {
 		if(!checkSetting()){
+			if (parm.length == 1) {
+				openLocationFunId = parm[0];
+				callbackToJs(Integer.parseInt(openLocationFunId), false, EUExCallback.F_C_FAILED);
+			}
 			jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_FAILED);
 			return;
 		}else{
+			if (parm.length == 1) {
+				openLocationFunId = parm[0];
+				callbackToJs(Integer.parseInt(openLocationFunId), false, EUExCallback.F_C_SUCCESS);
+
+			}
 			jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_SUCCESS);
 		}
 		BaiduLocation bdl = BaiduLocation.get(mContext);
@@ -59,6 +72,10 @@ public class EUExLocation extends EUExBase{
 		}
 		String inLatitude = parm[0];
 		String inLongitude = parm[1];
+        if (parm.length == 4) {
+            getAddressFunId = parm[3];
+        }
+
 		int flag = 0;
 		if(parm.length > 2){
 			try {
@@ -221,10 +238,27 @@ public class EUExLocation extends EUExBase{
 						if(result.has("location")){
 							cbResult.put("location", result.getJSONObject("location"));
 						}
-						jsCallback(functiong, 0, EUExCallback.F_C_JSON, cbResult.toString());
+                        jsCallback(functiong, 0, EUExCallback.F_C_JSON, cbResult.toString());
+                        if (null != getAddressFunId) {
+                            final JSONObject ret = cbResult;
+                            ((Activity)mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callbackToJs(Integer.parseInt(getAddressFunId), false, ret);
+                                }
+                            });
+                        }
 					}else{
-						String formatted_address = result.getString("formatted_address");
-						jsCallback(functiong, 0, EUExCallback.F_C_TEXT, formatted_address);
+						final String formatted_address = result.getString("formatted_address");
+                        jsCallback(functiong, 0, EUExCallback.F_C_TEXT, formatted_address);
+                        if (null != getAddressFunId) {
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callbackToJs(Integer.parseInt(getAddressFunId), false, formatted_address);
+                                }
+                            });
+                        }
 					}
 					return;
 				}

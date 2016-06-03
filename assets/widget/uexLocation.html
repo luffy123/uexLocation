@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        
+
         <meta name="viewport"
         content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" type="text/css" href="css/index.css">
@@ -35,7 +35,9 @@
                 //distanceFilter 更新距离，如果设置为 100m,则100m以内不回调定位
                 var distanceFilter = 10;
                 //以上两参数仅ios支持
-                uexLocation.openLocation(locLevel, distanceFilter);
+                uexLocation.openLocation(locLevel, distanceFilter, function(data) {
+                    alert(data);
+                });
             }
             function convert() {
                  var params = {
@@ -46,6 +48,14 @@
                  };
                  var data = uexLocation.convertLocation(JSON.stringify(params));
                  alert(data);
+            }
+            function getAddress() {
+                var callback = function(data) {
+                    alert(data);
+                    console.log(JSON.stringify(data))
+                    console.log(JSON.stringify(data.formatted_address));
+                };
+                uexLocation.getAddress(document.getElementById('latitude').value,document.getElementById('longitude').value,1, callback);
             }
             </script>
             </head>
@@ -59,7 +69,7 @@
                     </div>
                     <input type="hidden" id="longitude"><input type="hidden" id="latitude">
                         <span>2.获取当前地址</span>
-                        <input class="btn" type="button" value="获取当前地址值" onclick="uexLocation.getAddress(document.getElementById('latitude').value,document.getElementById('longitude').value,1);">
+                        <input class="btn" type="button" value="获取当前地址值" onclick="getAddress();">
                             <span>获取当前地址值为：</span>
                             <div class="tcxx" id="adre"></div>
                             <span>3.关闭定位</span>
