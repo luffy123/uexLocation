@@ -17,13 +17,9 @@
                     document.getElementById('latitude').value = lat;
                     document.getElementById('location').innerHTML = "经度:" + log + " ,纬度:" + lat;
                 }
-            //根据经纬度获取具体地址
-            function LocationSuccess(opCode, dataType, data){
-                document.getElementById('adre').innerHTML = data;
-            }
+
             window.uexOnload = function(){
                 uexLocation.onChange = locationCallback;
-                uexLocation.cbGetAddress = LocationSuccess;
                 uexWidgetOne.cbError = function(opCode, errorCode, errorInfo){
                     alert("errorCode:" + errorCode + "\nerrorInfo:" + errorInfo);
                 }
@@ -51,9 +47,8 @@
             }
             function getAddress() {
                 var callback = function(data) {
-                    alert(data);
-                    console.log(JSON.stringify(data))
-                    console.log(JSON.stringify(data.formatted_address));
+                    document.getElementById('adre').innerHTML = JSON.stringify(data);
+                    alert(JSON.stringify(data));
                 };
                 uexLocation.getAddress(document.getElementById('latitude').value,document.getElementById('longitude').value,1, callback);
             }
