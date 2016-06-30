@@ -67,7 +67,7 @@ public class EUExLocation extends EUExBase{
 	}
 
 	public void getAddress(String[] parm) {
-		if(parm.length < 2){
+		if(parm.length < 3){
 			return;
 		}
 		String inLatitude = parm[0];
@@ -77,13 +77,13 @@ public class EUExLocation extends EUExBase{
         }
 
 		int flag = 0;
-		if(parm.length > 2){
-			try {
-				flag = Integer.valueOf(parm[2]);
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-		}
+
+        try {
+            flag = Integer.valueOf(parm[2]);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
 		if(null != mQueryTask){
 			mQueryTask.shutDown();
 			mQueryTask = null;
