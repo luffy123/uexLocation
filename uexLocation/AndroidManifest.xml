@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
- <uses-permission android:name="android.permission.INTERNET" />  
- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
- <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
- <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
- <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-        <meta-data
-            android:name="com.baidu.lbsapi.API_KEY"
-            android:value="RXpm4e0nc8Qyokpi6Lo5T0KE" />
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":push" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- 因为百度定位只要配置一个死的key就可以，所以直接写死一个 -->
+    <meta-data
+        android:name="com.baidu.lbsapi.API_KEY"
+        android:value="RXpm4e0nc8Qyokpi6Lo5T0KE" />
+
+    <service
+        android:name="com.baidu.location.f"
+        android:enabled="true"
+        android:process=":push" />
+
 </manifest>

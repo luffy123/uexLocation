@@ -9,7 +9,7 @@
 
     <application
         android:name="org.zywx.wbpalmstar.widgetone.WidgetOneApplication"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_place_black_48dp"
         android:label="@string/app_name" >
         <activity
             android:name="org.zywx.wbpalmstar.engine.EBrowserActivity"
@@ -23,7 +23,7 @@
         <activity
             android:name="org.zywx.wbpalmstar.engine.TempActivity"
             android:launchMode="standard"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name="org.zywx.wbpalmstar.engine.LoadingActivity"
             android:configChanges="keyboardHidden|orientation"
@@ -35,10 +35,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- uexlocation-->
+
+        <!-- uexlocation -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="RXpm4e0nc8Qyokpi6Lo5T0KE" />
+
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
@@ -48,13 +50,13 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <!-- uexlocation -->
-     <uses-permission android:name="android.permission.INTERNET" />  
-      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-      <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-      <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-      <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-     
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 </manifest>
