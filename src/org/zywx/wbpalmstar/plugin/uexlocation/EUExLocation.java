@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.zywx.wbpalmstar.base.BDebug;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.engine.universalex.EUExCallback;
@@ -184,7 +185,10 @@ public class EUExLocation extends EUExBase{
 		@Override
 		public void run() {
 			try {
-				mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder?output=json&key=3858de27109b1f1242a6bb17b4f722e8&location=" + mLatitude + "," + mLongitude);
+
+				mHttpGet = new HttpGet("http://api.map.baidu" +
+                        ".com/geocoder/v2/?output=json&ak=iaBgxhiBGCiABt9QqMGyHLnM&location=" + mLatitude + ","
+                        + mLongitude);
 				mHttpClient = new DefaultHttpClient();
 				HttpResponse response = mHttpClient.execute(mHttpGet);
 				int responseCode = response.getStatusLine().getStatusCode();
@@ -198,6 +202,7 @@ public class EUExLocation extends EUExBase{
 					if(mShutDown){
 						return;
 					}
+                    BDebug.i(str);
 					JSONObject json = new JSONObject(str);
 					String status = json.getString("status");
 					if("OK".equals(status)){
@@ -229,6 +234,9 @@ public class EUExLocation extends EUExBase{
 					return;
 				}
 			} catch (Exception e) {
+                if (BDebug.DEBUG){
+                    e.printStackTrace();
+                }
 				errorCallback(0, EUExCallback.F_E_UEXlOCATION_GETADDRESS, "netWork error");
 				return;
 			}finally{
