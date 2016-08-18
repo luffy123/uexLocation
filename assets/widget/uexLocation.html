@@ -1,13 +1,13 @@
 <!DOCTYPE HTML>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        <meta name="viewport"
-        content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-            <title>获取当前位置</title>
-            <script type="text/javascript">
+    <meta name="viewport"
+          content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <title>获取当前位置</title>
+    <script type="text/javascript">
                 var cText = 0;
                 var cJson = 1;
                 var cInt = 2;
@@ -20,14 +20,11 @@
 
             window.uexOnload = function(){
                 uexLocation.onChange = locationCallback;
-                uexWidgetOne.cbError = function(opCode, errorCode, errorInfo){
-                    alert("errorCode:" + errorCode + "\nerrorInfo:" + errorInfo);
-                }
             }
             //获取当前经纬度
             function locationFun(){
-                uexLocation.openLocation(function(error) {
-                    alert(error);
+                uexLocation.openLocation("gcj02",function(data) {
+                    alert(data);
                 });
             }
             function convert() {
@@ -41,46 +38,42 @@
                  alert(data);
             }
             function getAddress() {
-                var callback = function(data) {
-                    document.getElementById('adre').innerHTML = JSON.stringify(data);
-                    alert(JSON.stringify(data));
+                var callback = function(error,data) {
+                    if(!error){
+                        document.getElementById('adre').innerHTML = JSON.stringify(data);
+                        alert(JSON.stringify(data));
+                    }else{
+                        alert(error);
+                    }
+
                 };
-                uexLocation.getAddress(30.453851, 114.430494, 1, callback);
-            }
-            function getAddressByType() {
-                var param = {
-                    latitude: 30.453851,
-                    longitude: 114.430494,
-                    flag: 1,
-                    type: "bd09"
+                var params = {
+                    latitude: document.getElementById('latitude').value,
+                    longitude: document.getElementById('longitude').value,
+                    type:"gcj02",
+                    flag:2
                 };
-                var callback = function(data) {
-                    document.getElementById('adre').innerHTML = JSON.stringify(data);
-                    alert(JSON.stringify(data));
-                };
-                 uexLocation.getAddressByType(param, callback);
+                uexLocation.getAddressByType(params,callback);
             }
             </script>
-            </head>
-    <body>
-        <div class="conbor">
-            <div class="consj">
-                <span>1.获取当前经纬度：</span>
-                <input class="btn" type="button" value="获取当前经纬度" onclick="locationFun();">
-                    <span>当前的经纬度值为：</span>
-                    <div class="tcxx" id="location">
-                    </div>
-                    <input type="hidden" id="longitude"><input type="hidden" id="latitude">
-                        <span>2.获取当前地址</span>
-                        <input class="btn" type="button" value="获取当前地址值" onclick="getAddress();"/>
-                        <input class="btn" type="button" value="getAddressByType" onclick="getAddressByType();"/>
-
-                <span>获取当前地址值为：</span>
-                            <div class="tcxx" id="adre"></div>
-                            <span>3.关闭定位</span>
-                        <input class = "btn" type = "button" value = "关闭" onclick ="uexLocation.closeLocation();"></div>
-            <input class="btn" type="button" value="地址转换" onclick="convert();">
-
+</head>
+<body>
+<div class="conbor">
+    <div class="consj">
+        <span>1.获取当前经纬度：</span>
+        <input class="btn" type="button" value="获取当前经纬度" onclick="locationFun();">
+        <span>当前的经纬度值为：</span>
+        <div class="tcxx" id="location">
         </div>
-    </body>
+        <input type="hidden" id="longitude"><input type="hidden" id="latitude">
+        <span>2.获取当前地址</span>
+        <input class="btn" type="button" value="获取当前地址值" onclick="getAddress();">
+        <span>获取当前地址值为：</span>
+        <div class="tcxx" id="adre"></div>
+        <span>3.关闭定位</span>
+        <input class = "btn" type = "button" value = "关闭" onclick ="uexLocation.closeLocation();"></div>
+    <input class="btn" type="button" value="地址转换" onclick="convert();">
+
+</div>
+</body>
 </html>

@@ -205,7 +205,7 @@ public class EUExLocation extends EUExBase{
 		@Override
 		public void run() {
 			try {
-				mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder/v2/?output=json&ak=iaBgxhiBGCiABt9QqMGyHLnM&location=" + mLatitude + "," + mLongitude);
+                mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder/v2/?output=json&ak=iaBgxhiBGCiABt9QqMGyHLnM&location=" + mLatitude + "," + mLongitude);
                 mHttpClient = new DefaultHttpClient();
 				HttpResponse response = mHttpClient.execute(mHttpGet);
 				int responseCode = response.getStatusLine().getStatusCode();
@@ -300,19 +300,35 @@ public class EUExLocation extends EUExBase{
 		@Override
 		public void onLocation(double lat, double log, float radius) {
             //将baidu坐标系转成指定的
-            double [] result = transferByType(log, lat, defaultType);
-			String js = SCRIPT_HEADER + "if(" + onFunction + "){" + onFunction + "(" + result[0] + "," + result[1] + "," + radius + ");}";
+            double [] result = transferByType(log, lat, BD09, defaultType);
+			String js = SCRIPT_HEADER + "if(" + onFunction + "){" + onFunction + "(" + result[1] + "," + result[0] + "," + radius + ");}";
 			mBrwView.loadUrl(js);
 		}
 	}
 
-    private double[] transferByType(double longitude, double latitude, String to) {
+    /**
+     *
+     * @param longitude
+     * @param latitude
+     * @param to
+     * @return array[0]: longitude, array[1]: latitude
+     */
+    private double[] transferByType(double longitude, double latitude, String from, String to) {
         double [] result;
-        if (GCJ02.equalsIgnoreCase(to)) {
+        if (WGS84.equalsIgnoreCase(from) && BD09.equalsIgnoreCase(to)) {
+            result = CoordTransform.WGS84ToBD09(longitude, latitude);
+        } else if (WGS84.equalsIgnoreCase(from) && GCJ02.equalsIgnoreCase(to)) {
+            result = CoordTransform.WGS84ToGCJ02(longitude, latitude);
+        } else if (BD09.equalsIgnoreCase(from) && GCJ02.equalsIgnoreCase(to)) {
             result = CoordTransform.BD09ToGCJ02(longitude, latitude);
-        } else if ( WGS84.equalsIgnoreCase(to)) {
+        } else if (BD09.equalsIgnoreCase(from) && WGS84.equalsIgnoreCase(to)) {
             result = CoordTransform.BD09ToWGS84(longitude, latitude);
+        } else if (GCJ02.equalsIgnoreCase(from) && WGS84.equalsIgnoreCase(to)) {
+            result = CoordTransform.GCJ02ToWGS84(longitude, latitude);
+        } else if (GCJ02.equalsIgnoreCase(from) && BD09.equalsIgnoreCase(to)) {
+            result = CoordTransform.GCJ02ToBD09(longitude, latitude);
         } else {
+            //如果传入的from, to 非法，则不处理
             result = new double[2];
             result[0] = longitude;
             result[1] = latitude;
@@ -331,7 +347,7 @@ public class EUExLocation extends EUExBase{
             double longitude = jsonObject.getDouble("longitude");
             String type = jsonObject.optString("type", BD09);
 
-            double [] result = transferByType(longitude, latitude, type);
+            double [] result = transferByType(longitude, latitude, type, BD09);
 
             int flag = jsonObject.optInt("flag", 0);
             getAddressFunId = params[1];
