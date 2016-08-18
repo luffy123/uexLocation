@@ -248,7 +248,7 @@ public class EUExLocation extends EUExBase{
                             ((Activity)mContext).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callbackToJs(Integer.parseInt(getAddressFunId), false, ret);
+                                    callbackToJs(Integer.parseInt(getAddressFunId), false, EUExCallback.F_C_SUCCESS, ret);
                                 }
                             });
                         }
@@ -259,7 +259,7 @@ public class EUExLocation extends EUExBase{
                             ((Activity) mContext).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callbackToJs(Integer.parseInt(getAddressFunId), false, formatted_address);
+                                    callbackToJs(Integer.parseInt(getAddressFunId), false, EUExCallback.F_C_SUCCESS, formatted_address);
                                 }
                             });
                         }
