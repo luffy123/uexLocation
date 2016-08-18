@@ -26,13 +26,8 @@
             }
             //获取当前经纬度
             function locationFun(){
-                //0最准确，1十米以内 ，2百米以内，3千米内，4三千米以内
-                var locLevel = 0;
-                //distanceFilter 更新距离，如果设置为 100m,则100m以内不回调定位
-                var distanceFilter = 10;
-                //以上两参数仅ios支持
-                uexLocation.openLocation(locLevel, distanceFilter, function(data) {
-                    alert(data);
+                uexLocation.openLocation(function(error) {
+                    alert(error);
                 });
             }
             function convert() {
@@ -50,7 +45,20 @@
                     document.getElementById('adre').innerHTML = JSON.stringify(data);
                     alert(JSON.stringify(data));
                 };
-                uexLocation.getAddress(document.getElementById('latitude').value,document.getElementById('longitude').value,1, callback);
+                uexLocation.getAddress(30.453851, 114.430494, 1, callback);
+            }
+            function getAddressByType() {
+                var param = {
+                    latitude: 30.453851,
+                    longitude: 114.430494,
+                    flag: 1,
+                    type: "bd09"
+                };
+                var callback = function(data) {
+                    document.getElementById('adre').innerHTML = JSON.stringify(data);
+                    alert(JSON.stringify(data));
+                };
+                 uexLocation.getAddressByType(param, callback);
             }
             </script>
             </head>
@@ -64,8 +72,10 @@
                     </div>
                     <input type="hidden" id="longitude"><input type="hidden" id="latitude">
                         <span>2.获取当前地址</span>
-                        <input class="btn" type="button" value="获取当前地址值" onclick="getAddress();">
-                            <span>获取当前地址值为：</span>
+                        <input class="btn" type="button" value="获取当前地址值" onclick="getAddress();"/>
+                        <input class="btn" type="button" value="getAddressByType" onclick="getAddressByType();"/>
+
+                <span>获取当前地址值为：</span>
                             <div class="tcxx" id="adre"></div>
                             <span>3.关闭定位</span>
                         <input class = "btn" type = "button" value = "关闭" onclick ="uexLocation.closeLocation();"></div>

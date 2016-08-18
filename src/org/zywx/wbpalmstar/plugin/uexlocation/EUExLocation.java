@@ -38,6 +38,7 @@ public class EUExLocation extends EUExBase{
 	private QueryTask mQueryTask;
 	private String getAddressFunId;
 	private String openLocationFunId;
+    private String defaultType = BD09;
 
 	public EUExLocation(Context context, EBrowserView inParent) {
 		super(context, inParent);
@@ -48,19 +49,22 @@ public class EUExLocation extends EUExBase{
 
 	public void openLocation(String[] parm) {
 		if(!checkSetting()){
-			if (parm.length == 1) {
-				openLocationFunId = parm[0];
+			if (parm.length > 0) {
+				openLocationFunId = parm[parm.length - 1];
 				callbackToJs(Integer.parseInt(openLocationFunId), false, EUExCallback.F_C_FAILED);
-			}
-			jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_FAILED);
-			return;
-		}else{
-			if (parm.length == 1) {
-				openLocationFunId = parm[0];
+			} else {
+                jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_FAILED);
+            }
+		} else {
+			if (parm.length > 0) {
+				openLocationFunId = parm[parm.length - 1];
 				callbackToJs(Integer.parseInt(openLocationFunId), false, EUExCallback.F_C_SUCCESS);
-
-			}
-			jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_SUCCESS);
+                if (parm.length == 2) {
+                    defaultType = parm[0]; //设置类型
+                }
+			} else {
+                jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_SUCCESS);
+            }
 		}
 		BaiduLocation bdl = BaiduLocation.get(mContext);
 		bdl.openLocation(mLCallback);
@@ -201,8 +205,8 @@ public class EUExLocation extends EUExBase{
 		@Override
 		public void run() {
 			try {
-				mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder?output=json&key=3858de27109b1f1242a6bb17b4f722e8&location=" + mLatitude + "," + mLongitude);
-				mHttpClient = new DefaultHttpClient();
+				mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder/v2/?output=json&ak=iaBgxhiBGCiABt9QqMGyHLnM&location=" + mLatitude + "," + mLongitude);
+                mHttpClient = new DefaultHttpClient();
 				HttpResponse response = mHttpClient.execute(mHttpGet);
 				int responseCode = response.getStatusLine().getStatusCode();
 				if (responseCode == HttpStatus.SC_OK) {
@@ -295,10 +299,51 @@ public class EUExLocation extends EUExBase{
 
 		@Override
 		public void onLocation(double lat, double log, float radius) {
-			String js = SCRIPT_HEADER + "if(" + onFunction + "){" + onFunction + "(" + lat + "," + log + "," + radius + ");}";
+            //将baidu坐标系转成指定的
+            double [] result = transferByType(log, lat, defaultType);
+			String js = SCRIPT_HEADER + "if(" + onFunction + "){" + onFunction + "(" + result[0] + "," + result[1] + "," + radius + ");}";
 			mBrwView.loadUrl(js);
 		}
 	}
 
+    private double[] transferByType(double longitude, double latitude, String to) {
+        double [] result;
+        if (GCJ02.equalsIgnoreCase(to)) {
+            result = CoordTransform.BD09ToGCJ02(longitude, latitude);
+        } else if ( WGS84.equalsIgnoreCase(to)) {
+            result = CoordTransform.BD09ToWGS84(longitude, latitude);
+        } else {
+            result = new double[2];
+            result[0] = longitude;
+            result[1] = latitude;
+        }
+        return result;
+    }
+
+    public void getAddressByType(String [] params) {
+        if(params.length < 2) {
+            return;
+        }
+        String paramString = params[0];
+        try {
+            JSONObject jsonObject = new JSONObject(paramString);
+            double latitude = jsonObject.getDouble("latitude");
+            double longitude = jsonObject.getDouble("longitude");
+            String type = jsonObject.optString("type", BD09);
+
+            double [] result = transferByType(longitude, latitude, type);
+
+            int flag = jsonObject.optInt("flag", 0);
+            getAddressFunId = params[1];
+            if(null != mQueryTask){
+                mQueryTask.shutDown();
+                mQueryTask = null;
+            }
+            mQueryTask = new QueryTask(String.valueOf(result[1]), String.valueOf(result[0]), flag);
+            mQueryTask.start();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

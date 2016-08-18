@@ -6,5 +6,8 @@
         <method name="getAddress" />
         <method name="closeLocation" />
         <method name="convertLocation" />
+
+        <!--4.0新增接口，会将传入坐标系转成百度坐标系，然后调用百度的接口获取地理位置信息-->
+        <method name="getAddressByType" />
     </plugin>
 </uexplugins>
