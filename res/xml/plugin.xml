@@ -6,5 +6,6 @@
         <method name="getAddress" />
         <method name="closeLocation" />
         <method name="convertLocation" />
+        <method name="getAddressByType" />
     </plugin>
 </uexplugins>

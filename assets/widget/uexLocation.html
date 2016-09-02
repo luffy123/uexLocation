@@ -26,17 +26,17 @@
 			alert("errorCode:" + errorCode + "\nerrorInfo:" + errorInfo);
 		}
 	}
-	
+
 	//获取当前经纬度
 	function openLocation() {
-		
+
 		//以下两参数仅ios支持
 		var locLevel = 0;//0最准确，1十米以内 ，2百米以内，3千米内，4三千米以内
 		var distanceFilter = 10;//distanceFilter 更新距离，如果设置为 100m,则100m以内不回调定位
-		
-		uexLocation.openLocation(locLevel, distanceFilter);
+
+		uexLocation.openLocation();
 	}
-	
+
 	//获取经纬度对应的具体地址信息
 	function getAddress(){
 		var latitude = document.getElementById('latitude').value;
@@ -44,7 +44,22 @@
 		var flag = 1;
 		uexLocation.getAddress(latitude,longitude,flag);
 	}
-	
+
+		//获取经纬度对应的具体地址信息
+	function getAddress(){
+		var latitude = document.getElementById('latitude').value;
+		var longitude = document.getElementById('longitude').value;
+		var type = document.getElementById('type').value;
+		var flag = 1;
+		var param = {
+		    latitude: latitude,
+		    longitude: longitude,
+		    type: type,
+		    flag:1
+		}
+		uexLocation.getAddressByType(JSON.stringify(param));
+	}
+
 	//地址转换
 	function convertLocation() {
         var params = {
@@ -56,30 +71,31 @@
         var data = uexLocation.convertLocation(JSON.stringify(params));
         alert("地址转换同步返回:\n"+data);
    }
-	
+
 </script>
 </head>
 <body>
 	<div class="conbor">
 		<div class="consj">
-		
-			<span>openLocation</span> 
+
+			<span>openLocation</span>
 			<input class="btn" type="button" value="获取当前经纬度" onclick="openLocation();">
-			
+
 			<span>当前的经纬度值为：</span>
-			<input type="tcxx" id="latitude"> 
+			<input type="tcxx" id="latitude">
 			<input type="tcxx" id="longitude"><br /><br />
-			
-			<span>getAddress</span> 
+
+			<span>getAddress</span>
+            <input class="btn" id="type" value="bd09"><br />
 			<input class="btn" type="button" value="获取经纬度对应的具体地址信息" onclick="getAddress()"><br /><br />
-			
+
 			<span>closeLocation</span>
 			<input class="btn" type="button" value="关闭定位" onclick="uexLocation.closeLocation();">
-		
-			<span>convertLocation</span> 
+
+			<span>convertLocation</span>
 			<input class="btn" type="button" value="地址转换" onclick="convertLocation();">
-			
-		
+
+
 		</div>
 	</div>
 </body>

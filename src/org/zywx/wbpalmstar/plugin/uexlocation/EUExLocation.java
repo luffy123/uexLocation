@@ -35,6 +35,7 @@ public class EUExLocation extends EUExBase {
 	private LCallback mLCallback;
 	private QueryTask mQueryTask;
 
+    private String locationType = BD09;
 	public EUExLocation(Context context, EBrowserView inParent) {
 		super(context, inParent);
 		count++;
@@ -49,6 +50,9 @@ public class EUExLocation extends EUExBase {
 		} else {
 			jsCallback(functionl, 0, EUExCallback.F_C_INT, EUExCallback.F_C_SUCCESS);
 		}
+        if (parm.length == 1) {
+            locationType = parm[0];
+        }
 		BaiduLocation bdl = BaiduLocation.get(mContext);
 		bdl.openLocation(mLCallback);
 	}
@@ -77,7 +81,7 @@ public class EUExLocation extends EUExBase {
 
 	/**
 	 * 坐标转换
-	 * 
+	 *
 	 * @param params
 	 */
 	public String convertLocation(String[] params) {
@@ -269,9 +273,62 @@ public class EUExLocation extends EUExBase {
 
 		@Override
 		public void onLocation(double lat, double log, float radius) {
+            double [] result = transferByType(log, lat, BD09, locationType);
+            log = result[0];
+            lat = result[1];
 			String js = SCRIPT_HEADER + "if(" + onFunction + "){" + onFunction + "(" + lat + "," + log + "," + radius + ");}";
 			mBrwView.loadUrl(js);
 		}
 	}
 
+    private double[] transferByType(double longitude, double latitude, String from, String to) {
+        double [] result;
+        if (WGS84.equalsIgnoreCase(from) && BD09.equalsIgnoreCase(to)) {
+            result = CoordTransform.WGS84ToBD09(longitude, latitude);
+        } else if (WGS84.equalsIgnoreCase(from) && GCJ02.equalsIgnoreCase(to)) {
+            result = CoordTransform.WGS84ToGCJ02(longitude, latitude);
+        } else if (BD09.equalsIgnoreCase(from) && GCJ02.equalsIgnoreCase(to)) {
+            result = CoordTransform.BD09ToGCJ02(longitude, latitude);
+        } else if (BD09.equalsIgnoreCase(from) && WGS84.equalsIgnoreCase(to)) {
+            result = CoordTransform.BD09ToWGS84(longitude, latitude);
+        } else if (GCJ02.equalsIgnoreCase(from) && WGS84.equalsIgnoreCase(to)) {
+            result = CoordTransform.GCJ02ToWGS84(longitude, latitude);
+        } else if (GCJ02.equalsIgnoreCase(from) && BD09.equalsIgnoreCase(to)) {
+            result = CoordTransform.GCJ02ToBD09(longitude, latitude);
+        } else {
+            //如果传入的from, to 非法，则不处理
+            result = new double[2];
+            result[0] = longitude;
+            result[1] = latitude;
+        }
+        return result;
+    }
+
+    public void getAddressByType(String [] params) {
+        if(params.length < 1) {
+            return;
+        }
+        String paramString = params[0];
+        try {
+            JSONObject jsonObject = new JSONObject(paramString);
+            double latitude = jsonObject.getDouble("latitude");
+            double longitude = jsonObject.getDouble("longitude");
+            String type = jsonObject.optString("type", BD09);
+
+            double [] result = transferByType(longitude, latitude, type, BD09);
+
+            int flag = jsonObject.optInt("flag", 0);
+            if(null != mQueryTask){
+                mQueryTask.shutDown();
+                mQueryTask = null;
+            }
+            mQueryTask = new QueryTask(String.valueOf(result[1]), String.valueOf(result[0]), flag);
+            mQueryTask.start();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
+
+

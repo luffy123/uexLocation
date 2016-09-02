@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
     <plugin
-        uexName="uexLocation" version="3.0.10" build="10">
-        <info>10:升级逆地理编码接口</info>
+        uexName="uexLocation" version="3.0.11" build="11">
+        <info>11:新增getAddressByType接口，支持指定类型的经纬度返回</info>
+        <build>10:升级逆地理编码接口</build>
         <build>9:更新SDK版本到3.7.3;简化测试case</build>
         <build>8:新增坐标系转换接口,支持wgs84,gcj02,bd09格式相互转换</build>
         <build>7:修复bug支持后台定位插件</build>
