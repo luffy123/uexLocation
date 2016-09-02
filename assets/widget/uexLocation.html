@@ -37,16 +37,9 @@
 		uexLocation.openLocation();
 	}
 
-	//获取经纬度对应的具体地址信息
-	function getAddress(){
-		var latitude = document.getElementById('latitude').value;
-		var longitude = document.getElementById('longitude').value;
-		var flag = 1;
-		uexLocation.getAddress(latitude,longitude,flag);
-	}
 
-		//获取经纬度对应的具体地址信息
-	function getAddress(){
+    //获取经纬度对应的具体地址信息
+	function getAddressByType(){
 		var latitude = document.getElementById('latitude').value;
 		var longitude = document.getElementById('longitude').value;
 		var type = document.getElementById('type').value;
@@ -87,7 +80,7 @@
 
 			<span>getAddress</span>
             <input class="btn" id="type" value="bd09"><br />
-			<input class="btn" type="button" value="获取经纬度对应的具体地址信息" onclick="getAddress()"><br /><br />
+			<input class="btn" type="button" value="获取经纬度对应的具体地址信息" onclick="getAddressByType()"><br /><br />
 
 			<span>closeLocation</span>
 			<input class="btn" type="button" value="关闭定位" onclick="uexLocation.closeLocation();">
