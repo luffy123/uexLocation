@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
     <plugin
-        className="org.zywx.wbpalmstar.plugin.uexlocation.EUExLocation" uexName="uexLocation" >
-        <method name="openLocation" />
-        <method name="getAddress" />
-        <method name="closeLocation" />
-        <method name="convertLocation" />
-        <method name="getAddressByType" />
+            className="org.zywx.wbpalmstar.plugin.uexlocation.EUExLocation" uexName="uexLocation">
+        <method name="openLocation"/>
+        <method name="getAddress"/>
+        <method name="closeLocation"/>
+        <method name="convertLocation"/>
+        <method name="getAddressByType"/>
     </plugin>
 </uexplugins>
