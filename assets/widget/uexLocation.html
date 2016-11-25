@@ -1,95 +1,79 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <meta name="viewport"
-          content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, user-scalable=no"/>
+          content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <title>获取当前位置</title>
     <script type="text/javascript">
+                var cText = 0;
+                var cJson = 1;
+                var cInt = 2;
+                //启动定位功能，返回的通知函数 的回调函数
+                function locationCallback(lat, log){
+                    document.getElementById('longitude').value = log;
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('location').innerHTML = "经度:" + log + " ,纬度:" + lat;
+                }
 
-        //回调
-        window.uexOnload = function () {
-
-            uexLocation.onChange = function (lat, log) {
-                alert("-----onChange-----\n" + "lat = " + lat + "\n" + "log = " + log);
-                document.getElementById('longitude').value = log;
-                document.getElementById('latitude').value = lat;
+            window.uexOnload = function(){
+                uexLocation.onChange = locationCallback;
             }
-
-            uexLocation.cbGetAddress = function (opCode, dataType, data) {
-                alert("-----cbGetAddress-----\n" + data);
+            //获取当前经纬度
+            function locationFun(){
+                uexLocation.openLocation("gcj02",function(data) {
+                    alert(data);
+                });
             }
-
-            uexWidgetOne.cbError = function (opCode, errorCode, errorInfo) {
-                alert("errorCode:" + errorCode + "\nerrorInfo:" + errorInfo);
+            function convert() {
+                 var params = {
+                    latitude: 30.453851,
+                    longitude: 114.430494,
+                    from:"gcj02",
+                    to:"bd09"
+                 };
+                 var data = uexLocation.convertLocation(JSON.stringify(params));
+                 alert(data);
             }
-        }
+            function getAddress() {
+                var callback = function(error,data) {
+                    if(!error){
+                        document.getElementById('adre').innerHTML = JSON.stringify(data);
+                        alert(JSON.stringify(data));
+                    }else{
+                        alert(error);
+                    }
 
-        //获取当前经纬度
-        function openLocation() {
-
-            //以下两参数仅ios支持
-            var locLevel = 0;//0最准确，1十米以内 ，2百米以内，3千米内，4三千米以内
-            var distanceFilter = 10;//distanceFilter 更新距离，如果设置为 100m,则100m以内不回调定位
-
-            uexLocation.openLocation();
-        }
-
-
-        //获取经纬度对应的具体地址信息
-        function getAddressByType() {
-            var latitude = document.getElementById('latitude').value;
-            var longitude = document.getElementById('longitude').value;
-            var type = document.getElementById('type').value;
-            var flag = 1;
-            var param = {
-                latitude: latitude,
-                longitude: longitude,
-                type: type,
-                flag: 1
+                };
+                var params = {
+                    latitude: document.getElementById('latitude').value,
+                    longitude: document.getElementById('longitude').value,
+                    type:"gcj02",
+                    flag:2
+                };
+                uexLocation.getAddressByType(params,callback);
             }
-            uexLocation.getAddressByType(JSON.stringify(param));
-        }
-
-        //地址转换
-        function convertLocation() {
-            var params = {
-                latitude: 30.453851,
-                longitude: 114.430494,
-                from: "gcj02",
-                to: "bd09"
-            };
-            var data = uexLocation.convertLocation(JSON.stringify(params));
-            alert("地址转换同步返回:\n" + data);
-        }
-
-    </script>
+            </script>
 </head>
 <body>
 <div class="conbor">
     <div class="consj">
-
-        <span>openLocation</span>
-        <input class="btn" type="button" value="获取当前经纬度" onclick="openLocation();">
-
+        <span>1.获取当前经纬度：</span>
+        <input class="btn" type="button" value="获取当前经纬度" onclick="locationFun();">
         <span>当前的经纬度值为：</span>
-        <input type="tcxx" id="latitude">
-        <input type="tcxx" id="longitude"><br/><br/>
+        <div class="tcxx" id="location">
+        </div>
+        <input type="hidden" id="longitude"><input type="hidden" id="latitude">
+        <span>2.获取当前地址</span>
+        <input class="btn" type="button" value="获取当前地址值" onclick="getAddress();">
+        <span>获取当前地址值为：</span>
+        <div class="tcxx" id="adre"></div>
+        <span>3.关闭定位</span>
+        <input class = "btn" type = "button" value = "关闭" onclick ="uexLocation.closeLocation();"></div>
+    <input class="btn" type="button" value="地址转换" onclick="convert();">
 
-        <span>getAddress</span>
-        <input class="btn" id="type" value="bd09"><br/>
-        <input class="btn" type="button" value="获取经纬度对应的具体地址信息" onclick="getAddressByType()"><br/><br/>
-
-        <span>closeLocation</span>
-        <input class="btn" type="button" value="关闭定位" onclick="uexLocation.closeLocation();">
-
-        <span>convertLocation</span>
-        <input class="btn" type="button" value="地址转换" onclick="convertLocation();">
-
-
-    </div>
 </div>
 </body>
 </html>

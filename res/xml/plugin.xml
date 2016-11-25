@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
     <plugin
-            className="org.zywx.wbpalmstar.plugin.uexlocation.EUExLocation" uexName="uexLocation">
-        <method name="openLocation"/>
-        <method name="getAddress"/>
-        <method name="closeLocation"/>
-        <method name="convertLocation"/>
-        <method name="getAddressByType"/>
+        className="org.zywx.wbpalmstar.plugin.uexlocation.EUExLocation" uexName="uexLocation" >
+        <method name="openLocation" />
+        <method name="getAddress" />
+        <method name="closeLocation" />
+        <method name="convertLocation" />
+        <!--4.0新增接口，会将传入坐标系转成百度坐标系，然后调用百度的接口获取地理位置信息-->
+        <method name="getAddressByType" />
     </plugin>
 </uexplugins>
