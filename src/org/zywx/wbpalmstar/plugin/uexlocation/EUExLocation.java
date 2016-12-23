@@ -205,7 +205,7 @@ public class EUExLocation extends EUExBase{
 		@Override
 		public void run() {
 			try {
-                mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder/v2/?output=json&ak=iaBgxhiBGCiABt9QqMGyHLnM&location=" + mLatitude + "," + mLongitude);
+                mHttpGet = new HttpGet("http://api.map.baidu.com/geocoder/v2/?output=json&ak=lqAjltjYASwZRLQnOj2aTA9Y&location=" + mLatitude + "," + mLongitude);
                 mHttpClient = new DefaultHttpClient();
 				HttpResponse response = mHttpClient.execute(mHttpGet);
 				int responseCode = response.getStatusLine().getStatusCode();
@@ -221,13 +221,12 @@ public class EUExLocation extends EUExBase{
 					}
 					JSONObject json = new JSONObject(str);
 					String status = json.getString("status");
-					if("OK".equals(status)){
-						;
-					}else if("INVILID_KEY".equals(status)){
-						errorCallback(0, EUExCallback.F_E_UEXlOCATION_GETADDRESS, "invilid_key");
-						return;
-					}else if("INVALID_PARAMETERS".equals(status)){
-						errorCallback(0, EUExCallback.F_E_UEXlOCATION_GETADDRESS, "invalid_parameters");
+					if(!"0".equals(status)){
+						if (null != getAddressFunId) {
+							callbackToJs(Integer.parseInt(getAddressFunId), false, EUExCallback.F_C_FAILED,  json.getString("message"));
+						}else{
+							errorCallback(0, EUExCallback.F_E_UEXlOCATION_GETADDRESS, json.getString("message"));
+						}
 						return;
 					}
 					JSONObject result = json.getJSONObject("result");
